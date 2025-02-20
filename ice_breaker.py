@@ -5,18 +5,17 @@ from langchain_openai import ChatOpenAI
 #from langchain_ollama import ChatOllama
 import os
 from dotenv import load_dotenv
+from agents.linkedin_lookup_agent import lookup as  linkedin_lookup_agent
 from third_parties.linkedin import scrape_linkedin_profile
+ 
+ 
 
-information = """
-Carl Gustav Jung (/jʊŋ/ YUUNG;[1][2] German: [kaʁl ˈjʊŋ]; 26 July 1875 – 6 June 1961) was a Swiss psychiatrist, psychotherapist, and psychologist who founded the school of analytical psychology.[3][a] He was a prolific author, illustrator, and correspondent, and a complex and controversial character, in certain ways best known through his autobiography Memories, Dreams, Reflections.[6]
-
-Jung's work has been influential in the fields of psychiatry, anthropology, archaeology, literature, philosophy, psychology,[7] and religious studies. He worked as a research scientist at the Burghölzli psychiatric hospital in Zurich, under Eugen Bleuler. Jung established himself as an influential mind, developing a friendship with Sigmund Freud, founder of psychoanalysis, conducting a lengthy correspondence paramount to their joint vision of human psychology. Jung is widely regarded as one of the most influential psychologists in history.[8][9]
-    """
-
-if __name__ == "__main__":
-    print("hello LangChain!")
-    load_dotenv()
-    print(os.environ["OPENAI_API_KEY"])
+def ice_break_with(name: str) -> str:
+ 
+ 
+    linkedin_username = linkedin_lookup_agent(name=name)
+    linkedin_data = scrape_linkedin_profile(linkedin_profile_url=linkedin_username)
+ 
     summary_template = """
         given the information {information} about a person from I want you to create:
         1. a short summary
@@ -32,9 +31,13 @@ if __name__ == "__main__":
 
     chain = summary_prompt_template | llm | StrOutputParser()
 
-    linkedin_data = scrape_linkedin_profile(
-        linkedin_profile_url="https://www.linkedin.com/in/eden-marco/"
-    )
-
+    
+ 
     res = chain.invoke(input={"information": linkedin_data})
     print(res)
+
+
+if __name__ == "__main__":
+    load_dotenv()
+    print("Ice Breaker Enter")
+    ice_break_with(name="Kimberly Jayavelu")
